@@ -10,7 +10,7 @@ import org.testng.annotations.BeforeTest;
 public class TestBase {
     protected WebDriver driver;
    // private static WebDriver driver;
-    private static String baseUrl;
+   protected String baseUrl;
     private static boolean acceptNextAlert = true;
     private static StringBuffer verificationErrors = new StringBuffer();
 
@@ -38,14 +38,14 @@ public class TestBase {
         }
     }
 
-    protected void openMainPage() {
-        driver.get(baseUrl + "admin/");
+    protected void openPage(String path) {
+        driver.get(path);
     }
 
 
-    protected void openShopPage() {
-        driver.get(baseUrl);
-    }
+
+
+
 
     protected void fillLoginForm(LoginData loginData) {
         driver.findElement(By.name("username")).clear();
@@ -61,8 +61,14 @@ public class TestBase {
 
 
     protected WebElement find(String locator, int index) {
-        return  driver.findElements(By.cssSelector(locator)).get(index);
+        return  driver.findElements(By.xpath(locator)).get(index);
     }
+
+
+    protected WebElement findEl(String locator) {
+        return  driver.findElement(By.xpath(locator));
+    }
+
     protected int findSizeByCss(String locator) {
         return  driver.findElements(By.cssSelector(locator)).size();
     }
@@ -73,6 +79,10 @@ public class TestBase {
 
     protected void click(String locator, int index) {
         find(locator, index).click();
+    }
+
+    protected void clickEl(String locator) {
+        findEl(locator).click();
     }
 
     @AfterTest
