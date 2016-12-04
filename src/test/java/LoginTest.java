@@ -89,6 +89,26 @@ public class LoginTest extends TestBase {
 
 
     @Test
+    public void testSortGeoZones() throws Exception {
+        testLoginAdmin();
+
+        openPage("http://localhost/litecart/admin/?app=geo_zones&doc=geo_zones");
+        sleep(500);
+        int count = findSizeByxPath(".//*[@id='content']/form/table/tbody//a");
+        String xBase = ".//*[@id='content']/form/table/tbody/tr[%d]//a";
+        ArrayList<String> geoZones = new ArrayList();
+        ArrayList<String> geoZonesSort = new ArrayList();
+        for (int i = 1; i < count; i++) {
+            String locator = String.format(xBase, i + 1);
+            String s = driver.findElement(By.xpath(locator)).getText();
+            geoZones.add(s);
+        }
+        geoZonesSort.addAll(geoZones);
+        boolean b = geoZones.contains(geoZonesSort);
+        assertEquals(geoZones, geoZonesSort);
+    }
+
+    @Test
     public void testOpenPageCorrectly() throws Exception {
 
         openPage("http://localhost/litecart/");
