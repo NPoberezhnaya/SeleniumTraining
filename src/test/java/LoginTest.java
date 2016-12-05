@@ -2,6 +2,8 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.testng.annotations.Test;
 
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
@@ -11,11 +13,11 @@ import static junit.framework.Assert.assertEquals;
 public class LoginTest extends TestBase {
 
     @Test
-    public void testLoginAdmin() throws Exception {
+    public void testLoginAdmin(String user, String pass) throws Exception {
         openPage(baseUrl + "/admin");
         LoginData newLoginData = new LoginData();
-        newLoginData.loginName = "admin";
-        newLoginData.pass = "admin";
+        newLoginData.loginName = user;
+        newLoginData.pass = pass;
         fillLoginForm(newLoginData);
         clickLogin();
 
@@ -41,7 +43,7 @@ public class LoginTest extends TestBase {
 
     @Test
     public void testHeader() throws Exception {
-        testLoginAdmin();
+        testLoginAdmin("admin", "admin");
 
 
         int count = findSizeByxPath(".//*[@id='app-']/a/span[2]");
@@ -69,7 +71,7 @@ public class LoginTest extends TestBase {
 
     @Test
     public void testSortCountry() throws Exception {
-        testLoginAdmin();
+        testLoginAdmin("admin", "admin");
 
         openPage("http://localhost/litecart/admin/?app=countries&doc=countries");
         sleep(500);
@@ -90,7 +92,7 @@ public class LoginTest extends TestBase {
 
     @Test
     public void testSortGeoZones() throws Exception {
-        testLoginAdmin();
+        testLoginAdmin("admin", "admin");
 
         openPage("http://localhost/litecart/admin/?app=geo_zones&doc=geo_zones");
         sleep(500);
@@ -139,13 +141,14 @@ public class LoginTest extends TestBase {
 
     @Test
     public void testCreateNewUser() throws Exception {
-        testLoginAdmin();
+        testLoginAdmin("admin", "admin");
         String locatorUser = ".//*['app-']/div[contains(@id, 'box-apps-menu-wrapper')]//a[contains(@href, 'users')]";
         String locatorNewUser = ".//*[@id='content']/div/a[contains(@href, 'user')]";
-
+        //Click at Users button
         clickEl(locatorUser);
         sleep(500);
 
+        //Click at Create User button
         clickEl(locatorNewUser);
         sleep(500);
 
@@ -161,11 +164,41 @@ public class LoginTest extends TestBase {
         String locatorLoginUserPass = ".//*[@id='box-account-login']/div//input[contains(@name, 'password')]";
         String locatorLoginUserButton = ".//*[@id='box-account-login']/div//span/button[contains(@name, 'login')]";
 
-        //Random r = new Random(System.currentTimeMillis());
-        Random r = new Random(800);
-        String inputUserName = "User" + r;
+        //fill in user data
+        int r = (int)(Math.random()*10+10) ;
+        String inputUserName = "User" + r + "@.com";
         String inputUserPass = "Pass" + r;
 
+
+        System.out.println(inputUserName);
+        System.out.println(inputUserPass);
+///////////////////
+        Date curdate = new Date();
+        String inputUserData;
+        String inputUserExp;
+        Date yourDate = new Date();
+        Date newDate = new Date();
+
+        SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd");
+        String date = DATE_FORMAT.format(yourDate);
+
+
+        inputUserData = date;
+
+
+        Calendar c=Calendar.getInstance();
+        int year=c.get(c.YEAR);
+        int month=c.get(c.MONTH)+1;
+        int day=c.get(c.DAY_OF_MONTH);
+
+
+        Calendar c1 = Calendar.getInstance();
+        c1.setTime(yourDate);
+        c1.add(Calendar.YEAR, 1);
+        newDate = c1.getTime();
+        inputUserExp = DATE_FORMAT.format(newDate);
+
+////////////////////
         findEl(locatorInputUserName).sendKeys(inputUserName);
         sleep(1000);
 
@@ -173,30 +206,57 @@ public class LoginTest extends TestBase {
         sleep(1000);
 
         findEl(locatorInputUserPassRepeat).sendKeys(inputUserPass);
+        sleep(10000);
+
+        findEl(locatorInputUserBlockUntil).sendKeys(inputUserData);
         sleep(1000);
 
+        findEl(locatorInputUserBlockExp).sendKeys(inputUserExp);
+        sleep(1000);
+
+        String locatorCheckBoxEnabled = ".//*[@id='content']/form/table/tbody//input[contains(@type, 'checkbox')]";
+        clickEl(locatorCheckBoxEnabled);
+
+
+        //save user data
         clickEl(locatorInputUserSaveButton);
         sleep(1000);
 
-        Date curdate = new Date();
-        System.out.println(curdate.toString());
 
-
-
-        openPage("http://localhost/litecart/");
+       //logout
+       String locatorLogoutButton = ".//*[@id='sidebar']/div[contains(@class, 'header')]/a[contains(@href, 'logout')]/i";
+        clickEl(locatorLogoutButton);
         sleep(500);
-        findEl(locatorLoginUser).sendKeys(inputUserName);
-        sleep(1000);
+      System.out.println(inputUserName);
+        System.out.println(inputUserPass);
+        //login with new user
+        testLoginAdmin(inputUserName, inputUserPass);
+        sleep(500);
 
-        findEl(locatorLoginUserPass).sendKeys(inputUserPass);
-        sleep(1000);
+        //logout
+        clickEl(locatorLogoutButton);
+        sleep(500);
 
-
-        clickEl(locatorLoginUserButton);
-
-       // assertEquals(countryNames, countryNamesSort);
     }
 
+
+
+    @Test
+    public void testAddNewProduct() throws Exception {
+        testLoginAdmin("admin", "admin");
+        String locatorCatalog = ".//*['app-']/div[contains(@id, 'box-apps-menu-wrapper')]//li[contains(@id,'app-')]/a[contains(@href, 'catalog&doc=catalog')]";
+        String locatorNewProduct = ".//*[@id='content']//a[contains(@href, 'edit_product')]";
+        //Click at Catalog button
+        clickEl(locatorCatalog);
+        sleep(500);
+
+        //Click at Create Product button
+        clickEl(locatorNewProduct);
+        sleep(500);
+
+
+
+    }
 
 
 }
