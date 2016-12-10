@@ -3,6 +3,7 @@ import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.support.ui.Select;
 import org.testng.annotations.Test;
 
+import java.io.File;
 import java.text.SimpleDateFormat;
 
 import java.util.*;
@@ -331,7 +332,7 @@ public class LoginTest extends TestBase {
        String locatorLogoutButton = ".//*[@id='sidebar']/div[contains(@class, 'header')]/a[contains(@href, 'logout')]/i";
         clickEl(locatorLogoutButton);
         sleep(500);
-      System.out.println(inputUserName);
+        System.out.println(inputUserName);
         System.out.println(inputUserPass);
         //login with new user
         testLoginAdmin(inputUserName, inputUserPass);
@@ -350,37 +351,174 @@ public class LoginTest extends TestBase {
         testLoginAdmin("admin", "admin");
         String locatorCatalog = ".//*['app-']/div[contains(@id, 'box-apps-menu-wrapper')]//li[contains(@id,'app-')]/a[contains(@href, 'catalog&doc=catalog')]";
         String locatorNewProduct = ".//*[@id='content']//a[contains(@href, 'edit_product')]";
+        sleep(2500);
+
         //Click at Catalog button
         clickEl(locatorCatalog);
-        sleep(500);
+        sleep(2500);
 
         //Click at Create Product button
         clickEl(locatorNewProduct);
-        sleep(500);
+        sleep(1000);
 
 
         String locatorNameProduct = ".//*[@id='tab-general']/table//input[contains(@name, 'name')]";
         String locatorCodeProduct = ".//*[@id='tab-general']/table//input[contains(@name, 'code')]";
-        String locatorCategory = ".//*[@id='tab-general']/table//input[contains(@name, 'value='1'')]";
+        String locatorCategory = ".//*[@id='tab-general']/table//input[contains(@data-name, 'Rubber Ducks')]";
         String locatorGroup =  ".//*[@id='tab-general']/table//input[contains(@value, '1-2')]";
         String locatorQuantity =  ".//*[@id='tab-general']//input[contains(@name, 'quantity')]";
-        String locatorQuantityUnit =  ".//*[@id='tab-general']//select[contains (@name, 'quantity_unit_id')]";
-        String locatorDeliveryStatus =  ".//*[@id='tab-general']//select[contains (@name, 'delivery_status_id')]";
-        String locatorSoldOutStatus =  ".//*[@id='tab-general']//select[contains (@name, 'sold_out_status_id')]";
+
+        String locatorSelectDefaultCategory =  ".//*[@id='tab-general']//select[contains (@name, 'default_category_id')]";
+        String locatorSelectQuantityUnit =  ".//*[@id='tab-general']//select[contains (@name, 'quantity_unit_id')]";
+        String locatorSelectDeliveryStatus =  ".//*[@id='tab-general']//select[contains (@name, 'delivery_status_id')]";
+        String locatorSelectSoldOutStatus =  ".//*[@id='tab-general']//select[contains (@name, 'sold_out_status_id')]";
         String locatorUploadImages =  ".//*[@id='tab-general']//input[contains(@name, 'new_images[]')]";
         String locatorData =  ".//*[@id='tab-general']//input[contains(@name, 'date_valid_from')]";
         String locatorDataValidTo =  ".//*[@id='tab-general']//input[contains(@name, 'date_valid_to')]";
 
+    ////////////////////////////////////////
+        ///General tab
+        ///////////////////////////////////////
+        int r = (int)(Math.random()*10+10) ;
+
+        findEl(locatorNameProduct).sendKeys("NameNewProduct" + r);
+        findEl(locatorCodeProduct).sendKeys("123" + r);
+        sleep(1000);
+
+        clickEl(locatorCategory);
+        sleep(1000);
+
+        /////////////////////
+        Select select = new Select(findEl(locatorSelectDefaultCategory));
+        select.selectByVisibleText("Rubber Ducks");
+        sleep(1000);
+
+
+        /////////////////////
+        select = new Select(findEl(locatorSelectQuantityUnit));
+        select.selectByVisibleText("pcs");
+        sleep(1000);
+
+        /////////////////////
+        select = new Select(findEl(locatorSelectDeliveryStatus));
+        select.selectByVisibleText("3-5 days");
+        sleep(1000);
+        //////////////
+
+        /////////////////////
+        select = new Select(findEl(locatorSelectSoldOutStatus));
+        select.selectByVisibleText("Sold out");
+        sleep(500);
+        //////////////
+
+        clickEl(locatorGroup);
+        findEl(locatorQuantity).sendKeys(r + "");
+        sleep(500);
+
+
+        ////
+        String filepath = "G:\\Idea\\file1.jpg";
+        File file = new File(filepath);
+        findEl(locatorUploadImages).sendKeys(file.getAbsolutePath());
+        sleep(1500);
+        ////////////////
+        ///Date
+        ////////////////
+
+        Date curdate = new Date();
+        String dateValidFrom;
+        String dateValidTo;
+        Date yourDate = new Date();
+        Date newDate = new Date();
+
+        SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd");
+        String date = DATE_FORMAT.format(yourDate);
+
+
+        dateValidFrom = date;
+
+
+        Calendar c=Calendar.getInstance();
+        int year=c.get(c.YEAR);
+        int month=c.get(c.MONTH)+1;
+        int day=c.get(c.DAY_OF_MONTH);
+
+
+        Calendar c1 = Calendar.getInstance();
+        c1.setTime(yourDate);
+        c1.add(Calendar.YEAR, 1);
+        newDate = c1.getTime();
+        dateValidTo = DATE_FORMAT.format(newDate);
+
+        findEl(locatorData).sendKeys(dateValidFrom);
+        findEl(locatorDataValidTo).sendKeys(dateValidTo);
+        sleep(500);
+
+        ////////////////////////////////////////////////////////////
+        ////Information tab
+        ////////////////////////////////////////////////////////////
         String locatorInformationTab =  ".//*[@id='content']//li/a[contains(@href, '#tab-information')]";
         String locatorSelectManuf =  ".//*[@id='tab-information']//select[contains(@name, 'manufacturer_id')]";
         String locatorSelectSuplier =  ".//*[@id='tab-information']//select[contains(@name, 'supplier_id')]";
 
+        String locatorKeywords =  ".//*[@id='tab-information']//input[contains(@name, 'keywords')]";
+        String locatorShortDesc =  ".//*[@id='tab-information']//input[contains(@name, 'short_description[en]')]";
+        String locatorDesc =  ".//*[@id='tab-information']//div[contains(@dir, 'ltr')]";
+        String locatorHeadTitle =  ".//*[@id='tab-information']//input[contains(@name, 'head_title[en]')]";
+        String locatorMetaDescription =  ".//*[@id='tab-information']//input[contains(@name, 'meta_description[en]')]";
 
 
+        clickEl(locatorInformationTab);
+
+        select = new Select(findEl(locatorSelectManuf));
+        select.selectByVisibleText("ACME Corp.");
+
+        sleep(500);
+        findEl(locatorKeywords).sendKeys("Keywords" + r);
+        findEl(locatorShortDesc).sendKeys("Short Description" + r);
+        findEl(locatorDesc).sendKeys("Long Long Long Long Long Long Long Long Long Long Long Long Long Long Long Long Long Long Long Long Long Description" + r);
+        findEl(locatorHeadTitle).sendKeys("Head Title" + r);
+        findEl(locatorMetaDescription).sendKeys("Meta" + r);
+        ////////////////////////////////////////////////////////////
+        ////Price tab
+        ////////////////////////////////////////////////////////////
+
+        String locatorPriceTab =  ".//*[@id='content']//li/a[contains(@href, '#tab-prices')]";
+        String locatorPurchase = ".//*[@id='tab-prices']//input[contains (@name, 'purchase_price')]";
+        String locatorSelectPurchase = ".//*[@id='tab-prices']//select[contains(@name, 'purchase_price_currency_code')]";
+        String locatorSelectTax = ".//*[@id='tab-prices']//select[contains(@name, 'tax_class_id')]";
 
 
+        String locatorPriceDoll = ".//*[@id='tab-prices']//span[contains(@class, 'input-wrapper')]/input[contains(@name, 'prices[USD]')]";
+        String locatorPriceEur = ".//*[@id='tab-prices']//span[contains(@class, 'input-wrapper')]/input[contains(@name, 'prices[EUR]')]";
+
+        String locatorPriceDollQuan = ".//*[@id='tab-prices']//input[contains(@name, 'gross_prices[USD]')]";
+        String locatorPriceEurQuan = ".//*[@id='tab-prices']//input[contains(@name, 'gross_prices[EUR]')]";
 
 
+        clickEl(locatorPriceTab);
+        sleep(500);
+        findEl(locatorPurchase).sendKeys(r + "");
+
+        select = new Select(findEl(locatorSelectPurchase));
+        select.selectByVisibleText("Euros");
+        sleep(500);
+
+        findEl(locatorPriceDoll).sendKeys(r + "");
+        sleep(500);
+
+        findEl(locatorPriceEur).sendKeys(r + "");
+        sleep(500);
+
+        findEl(locatorPriceDollQuan).sendKeys(r + "");
+        sleep(500);
+
+        findEl(locatorPriceEurQuan).sendKeys(r + "");
+        sleep(500);
+
+        String locatorSaveButton =  ".//*[@id='content']/form/p/span/button[contains(@name, 'save')]";
+        clickEl(locatorSaveButton);
+        sleep(4500);
 
     }
 
