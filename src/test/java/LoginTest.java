@@ -1,9 +1,10 @@
 import org.openqa.selenium.By;
 import org.openqa.selenium.firefox.FirefoxDriver;
+import org.openqa.selenium.support.ui.Select;
 import org.testng.annotations.Test;
 
 import java.text.SimpleDateFormat;
-import java.time.LocalDate;
+
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
@@ -14,7 +15,7 @@ public class LoginTest extends TestBase {
 
     @Test
     public void testLoginAdmin(String user, String pass) throws Exception {
-        openPage(baseUrl + "/admin");
+        openPage(baseUrl + "admin");
         LoginData newLoginData = new LoginData();
         newLoginData.loginName = user;
         newLoginData.pass = pass;
@@ -44,7 +45,7 @@ public class LoginTest extends TestBase {
     @Test
     public void testHeader() throws Exception {
         testLoginAdmin("admin", "admin");
-
+        sleep(2500);
 
         int count = findSizeByxPath(".//*[@id='app-']/a/span[2]");
 
@@ -53,7 +54,7 @@ public class LoginTest extends TestBase {
 
             if (isElementPresent(By.tagName("h1"))) {  System.out.println("   Exists!  "+ driver.findElement(By.tagName("h1")).getText());}
 
-            sleep(400);
+            sleep(700);
 
             if (findSizeByxPath(".//*[@class='docs']//span") != 0) {
                 int internalCount = findSizeByxPath(".//*[@class='docs']//span");
@@ -61,7 +62,7 @@ public class LoginTest extends TestBase {
                 for (int c = 0; c < internalCount; c++) {
                     click(".//*[@class='docs']//span", c);
                   if (isElementPresent(By.tagName("h1"))) { System.out.println("   Exists!  " + driver.findElement(By.tagName("h1")).getText());}
-                    sleep(400);
+                    sleep(700);
                 }
 
             }
@@ -74,7 +75,7 @@ public class LoginTest extends TestBase {
         testLoginAdmin("admin", "admin");
 
         openPage("http://localhost/litecart/admin/?app=countries&doc=countries");
-        sleep(500);
+        sleep(800);
      int count = findSizeByxPath(".//*[@id='content']/form/table/tbody//td[5]/a");
         String xBase = ".//*[@id='content']/form/table/tbody/tr[%d]/td[5]/a";
         ArrayList<String> countryNames = new ArrayList();
@@ -139,10 +140,113 @@ public class LoginTest extends TestBase {
     }
 
 
+
     @Test
+    public void testCreateNewUser1() throws Exception {
+        openPage("http://localhost/litecart/");
+       // sleep(250);
+
+
+        String locatorNewUser = ".//*[@id='box-account-login']//a";
+
+        //Click at Users button
+        clickEl(locatorNewUser);
+        String locatorInputTaxID = ".//*[@id='create-account']//input[contains (@name, 'tax_id')]";
+        String locatorInputCompany = ".//*[@id='create-account']//input[contains (@name, 'company')]";
+        String locatorInputFirstName = ".//*[@id='create-account']//input[contains (@name, 'firstname')]";
+        String locatorInputLastName = ".//*[@id='create-account']//input[contains (@name, 'lastname')]";
+        String locatorInputAddress1 = ".//*[@id='create-account']//input[contains (@name, 'address1')]";
+        String locatorInputAddress2 = ".//*[@id='create-account']//input[contains (@name, 'address2')]";
+        String locatorPostCode = ".//*[@id='create-account']//input[contains (@name, 'postcode')]";
+        String locatorCity = ".//*[@id='create-account']//input[contains (@name, 'city')]";
+        String locatorEmail = ".//*[@id='create-account']//input[contains (@name, 'email')]";
+        String locatorPhone = ".//*[@id='create-account']//input[contains (@name, 'phone')]";
+        String locatorPass = ".//*[@id='create-account']//td[1]/input[contains (@name, 'password')]";
+        String locatorPassRepeat = ".//*[@id='create-account']//input[contains (@name, 'confirmed_password')]";
+        String locatorNewLetter = ".//*[@id='create-account']//input[contains (@name, 'newsletter')]";
+        String locatorCreateAcc = ".//*[@id='create-account']//button";
+
+
+
+
+
+        int r = (int)(Math.random()*10+10) ;
+
+
+        String inputTaxID = r + "";
+        String inputCompany = "Company" + r;
+        String firstName = "FirstName" + r;
+        String inputLastName = "LastName" + r;
+        String inputAddress1 = "Address1" + r;
+        String inputAddress2 = "Address2" + r;
+        String inputPostCode = "65000";
+        String inputCity = "City" + r;
+        String inputEmail = "email" + r + "@com";
+        String inputPhone = "111 111 111 1";
+        String inputPass = "Pass" + r;
+        String inputPassRepeat =  "Pass" + r;
+
+
+        sleep(500);
+
+        findEl(locatorInputTaxID).sendKeys(inputTaxID);
+        findEl(locatorInputCompany).sendKeys(inputCompany);
+        findEl(locatorInputFirstName).sendKeys(firstName);
+        findEl(locatorInputLastName).sendKeys(inputLastName);
+        findEl(locatorInputAddress1).sendKeys(inputAddress1);
+        findEl(locatorInputAddress2).sendKeys(inputAddress2);
+        findEl(locatorPostCode).sendKeys(inputPostCode);
+        findEl(locatorCity).sendKeys(inputCity);
+        findEl(locatorEmail).sendKeys(inputEmail);
+
+        findEl(locatorPhone).sendKeys(inputPhone);
+        findEl(locatorPass).sendKeys(inputPass);
+        findEl(locatorPassRepeat).sendKeys(inputPass);
+
+
+        if ( !findEl(locatorNewLetter).isSelected() )
+        {
+            clickEl(locatorNewLetter);
+        }
+
+        //////
+       // String locatorCountry = ".//*[@id='select2-country_code-jx-container']";
+        String locatorCountry = ".//*[@name='country_code']";
+        Select select = new Select(findEl(locatorCountry));
+
+        select.selectByVisibleText("Ukraine");
+        sleep(500);
+        // select.getFirstSelectedOption().getText();
+        ////////////
+
+        clickEl(locatorCreateAcc);
+        sleep(500);
+
+
+        String locatorLogout = " .//*[@id='box-account']//a[contains(@href, 'logout')]";
+        clickEl(locatorLogout);
+        sleep(500);
+
+        String locatorLoginEmail = " .//*[@id='box-account-login']//input[contains(@name, 'email')]";
+        String locatorLoginPass = " .//*[@id='box-account-login']//input[contains(@name, 'password')]";
+        String locatorLoginClickLoginButton = " .//*[@id='box-account-login']//button[contains (@name, 'login')]";
+
+        findEl(locatorLoginEmail).sendKeys(inputEmail);
+        findEl(locatorLoginPass).sendKeys(inputPass);
+        sleep(500);
+        clickEl(locatorLoginClickLoginButton);
+        sleep(500);
+        clickEl(locatorLogout);
+
+    }
+
+
+
+
+        @Test
     public void testCreateNewUser() throws Exception {
         testLoginAdmin("admin", "admin");
-        String locatorUser = ".//*['app-']/div[contains(@id, 'box-apps-menu-wrapper')]//a[contains(@href, 'users')]";
+        String locatorUser = ".//*[@id='box-account-login']/div/form//td/a";
         String locatorNewUser = ".//*[@id='content']/div/a[contains(@href, 'user')]";
         //Click at Users button
         clickEl(locatorUser);
@@ -253,6 +357,28 @@ public class LoginTest extends TestBase {
         //Click at Create Product button
         clickEl(locatorNewProduct);
         sleep(500);
+
+
+        String locatorNameProduct = ".//*[@id='tab-general']/table//input[contains(@name, 'name')]";
+        String locatorCodeProduct = ".//*[@id='tab-general']/table//input[contains(@name, 'code')]";
+        String locatorCategory = ".//*[@id='tab-general']/table//input[contains(@name, 'value='1'')]";
+        String locatorGroup =  ".//*[@id='tab-general']/table//input[contains(@value, '1-2')]";
+        String locatorQuantity =  ".//*[@id='tab-general']//input[contains(@name, 'quantity')]";
+        String locatorQuantityUnit =  ".//*[@id='tab-general']//select[contains (@name, 'quantity_unit_id')]";
+        String locatorDeliveryStatus =  ".//*[@id='tab-general']//select[contains (@name, 'delivery_status_id')]";
+        String locatorSoldOutStatus =  ".//*[@id='tab-general']//select[contains (@name, 'sold_out_status_id')]";
+        String locatorUploadImages =  ".//*[@id='tab-general']//input[contains(@name, 'new_images[]')]";
+        String locatorData =  ".//*[@id='tab-general']//input[contains(@name, 'date_valid_from')]";
+        String locatorDataValidTo =  ".//*[@id='tab-general']//input[contains(@name, 'date_valid_to')]";
+
+        String locatorInformationTab =  ".//*[@id='content']//li/a[contains(@href, '#tab-information')]";
+        String locatorSelectManuf =  ".//*[@id='tab-information']//select[contains(@name, 'manufacturer_id')]";
+        String locatorSelectSuplier =  ".//*[@id='tab-information']//select[contains(@name, 'supplier_id')]";
+
+
+
+
+
 
 
 
