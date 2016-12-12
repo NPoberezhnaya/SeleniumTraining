@@ -1,7 +1,13 @@
+import junit.framework.Assert;
 import org.openqa.selenium.By;
+import org.openqa.selenium.WebElement;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.support.ui.Select;
+import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.annotations.Test;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+
+import org.openqa.selenium.support.ui.WebDriverWait;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
@@ -11,6 +17,7 @@ import java.util.concurrent.TimeUnit;
 
 import static java.lang.Thread.sleep;
 import static junit.framework.Assert.assertEquals;
+import static org.openqa.selenium.support.ui.ExpectedConditions.presenceOfElementLocated;
 
 public class LoginTest extends TestBase {
 
@@ -521,6 +528,78 @@ public class LoginTest extends TestBase {
         sleep(4500);
 
     }
+
+
+    @Test
+    public void testBasketCheck() throws Exception {
+        openPage("http://localhost/litecart/");
+
+        ////user with login/pass  exists
+
+        String locatorLoginEmail = " .//*[@id='box-account-login']//input[contains(@name, 'email')]";
+        String locatorLoginPass = " .//*[@id='box-account-login']//input[contains(@name, 'password')]";
+        String locatorLoginClickLoginButton = " .//*[@id='box-account-login']//button[contains (@name, 'login')]";
+        int quantityInBasket = 0;
+
+        findEl(locatorLoginEmail).sendKeys("q1111@com");
+        findEl(locatorLoginPass).sendKeys("q1111");
+
+        clickEl(locatorLoginClickLoginButton);
+
+
+        // wait until header appears
+        WebDriverWait wait = new WebDriverWait(driver, 30/*seconds*/);
+        WebElement element = wait.until(presenceOfElementLocated(By.xpath(".//*[@id='box-category-tree']/h3")));
+
+
+
+        String locatorProductNameOnMainPage = ".//*[@id='box-campaigns']//a[1]/div[contains(@class, 'name')]";
+        clickEl(locatorProductNameOnMainPage);
+
+        //3 products
+        for (int i = 1; i < 4; i++) {
+            String locatorProductName = ".//*[@id='box-product']//h1";
+            element = wait.until(presenceOfElementLocated(By.xpath(locatorProductName)));
+
+            String locatorSelectSize = ".//*[@id='box-product']//select";
+            Select select = new Select(findEl(locatorSelectSize));
+            select.selectByVisibleText("Small");
+
+            String locatorProductPrice = ".//*[@id='box-product']//div[contains(@class, 'price')]/strong";
+            String priceOnChildPage =   driver.findElement(By.xpath(locatorProductPrice)).getText();
+
+
+
+            priceOnChildPage = priceOnChildPage.substring(1, priceOnChildPage.length());
+
+
+            String locatorAddButton = ".//*[@id='box-product']//button";
+            clickEl(locatorAddButton);
+            quantityInBasket = quantityInBasket + 1;
+
+            Integer price = 0;
+            try {
+                 price = Integer.parseInt(priceOnChildPage);
+
+                 price = price * quantityInBasket;
+               // System.out.println(price);
+            }catch (NumberFormatException e) {
+                System.err.println("Неверный формат строки!");
+            }
+
+
+            String basketText;
+            basketText = quantityInBasket + " item(s) - $" + price  + "";
+            System.out.println(basketText);
+
+            wait.until(ExpectedConditions.textToBePresentInElement(findEl(".//*[@id='cart']/a[2]"), basketText));
+
+        }
+
+
+    }
+
+
 
 
 }
