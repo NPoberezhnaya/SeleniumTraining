@@ -1,11 +1,11 @@
 import junit.framework.Assert;
+import org.openqa.selenium.Alert;
 import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.firefox.FirefoxDriver;
-import org.openqa.selenium.support.ui.Select;
-import org.openqa.selenium.support.ui.WebDriverWait;
+import org.openqa.selenium.support.ui.*;
 import org.testng.annotations.Test;
-import org.openqa.selenium.support.ui.ExpectedConditions;
 
 import org.openqa.selenium.support.ui.WebDriverWait;
 
@@ -628,6 +628,42 @@ public class LoginTest extends TestBase {
     }
 
 
+    @Test
+    public void testAlert() throws Exception {
+        testLoginAdmin("admin", "admin");
+        openPage("http://localhost/litecart/admin/?app=countries&doc=countries");
+        String locatorAddNewCountry = ".//*[@id='content']/div/a";
+        clickEl(locatorAddNewCountry);
+        String locatorNewWindows = ".//*[@id='content']/form/table[1]/tbody//i";
 
+        int sizeNewWindows = findSizeByxPath(locatorNewWindows);
 
+        for (int i = 0; i < sizeNewWindows; i++) {
+        String mainWindow = driver.getWindowHandle();
+            final Set<String> oldWindows = driver.getWindowHandles();
+            //click at new window link
+            click(locatorNewWindows, i);
+
+            String newWindow = (new WebDriverWait(driver, 20))
+                    .until(new ExpectedCondition<String>() {
+                               public String apply(WebDriver driver) {
+                                   Set<String> newWindows = driver.getWindowHandles();
+                                   newWindows.removeAll(oldWindows);
+                                   return newWindows.size() > 0 ?
+                                           newWindows.iterator().next() : null;
+                               }
+                           }
+                    );
+
+            driver.switchTo().window(newWindow);
+
+            System.out.println("New window: " + driver.getTitle());
+            driver.close();
+
+            driver.switchTo().window(mainWindow);
+            System.out.println("Old window: " + driver.getTitle());
+
+        }
+
+    }
 }
