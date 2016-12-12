@@ -557,7 +557,7 @@ public class LoginTest extends TestBase {
         clickEl(locatorProductNameOnMainPage);
 
         //3 products
-        for (int i = 1; i < 4; i++) {
+        for (int i = 1; i < 5; i++) {
             String locatorProductName = ".//*[@id='box-product']//h1";
             element = wait.until(presenceOfElementLocated(By.xpath(locatorProductName)));
 
@@ -587,7 +587,6 @@ public class LoginTest extends TestBase {
                 System.err.println("Неверный формат строки!");
             }
 
-
             String basketText;
             basketText = quantityInBasket + " item(s) - $" + price  + "";
             System.out.println(basketText);
@@ -595,6 +594,35 @@ public class LoginTest extends TestBase {
             wait.until(ExpectedConditions.textToBePresentInElement(findEl(".//*[@id='cart']/a[2]"), basketText));
 
         }
+
+
+
+        //CheckOut
+        String locatorCheckOut = ".//*[@id='cart']/a[3]";
+        clickEl(locatorCheckOut);
+        String locatorTable = ".//*[@id='box-checkout-summary']/h2";
+        wait.until(presenceOfElementLocated(By.xpath(locatorTable)));
+
+        //Update the Backet
+        String locatorUpdateCount = ".//*[@id='box-checkout-cart']//input[contains(@name, 'quantity')]";
+        String locatorUpdateButton = ".//*[@id='box-checkout-cart']//button[contains(@name, 'update_ca')]";
+        String locatorBasketTable = ".//*[@id='order_confirmation-wrapper']/table/tbody/tr[2]/td[1]";
+
+
+        for (int i = 4; i > 1; i--) {
+            findEl(locatorUpdateCount).clear();
+           // findEl(locatorUpdateCount).sendKeys("1");
+            String s = Integer.toString(i - 1);
+            findEl(locatorUpdateCount).sendKeys(s);
+            clickEl(locatorUpdateButton);
+            wait.until(ExpectedConditions.textToBePresentInElement(findEl(locatorBasketTable), s));
+
+    }
+
+        //last product
+        findEl(locatorUpdateCount).clear();
+        findEl(locatorUpdateCount).sendKeys("0");
+        clickEl(locatorUpdateButton);
 
 
     }
